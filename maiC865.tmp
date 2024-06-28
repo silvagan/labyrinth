@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://dv2stuosd2v67"]
+
+[ext_resource type="Script" path="res://place.gd" id="1_ybu3i"]
+
+[node name="MainScene" type="Node2D"]
+
+[node name="Node" type="Node" parent="."]
+script = ExtResource("1_ybu3i")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.25
+autostart = true
+
+[connection signal="timeout" from="Timer" to="Node" method="_on_timer_timeout"]
