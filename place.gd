@@ -119,179 +119,8 @@ func _input(event):
 		update = true
 	if event.is_action_released("left_click") || event.is_action_released("right_click"):
 		
-		#thread = Thread.new()
-		#thread.start(_thread_function.bind())
-		if(delete):
-			preview_line.queue_free()
-			update = false
-			delete = false
-			
-			var coord_min = [min(dimentions[0][0], dimentions[1][0])/global_scaling, min(dimentions[0][1], dimentions[1][1])/global_scaling]
-			var coord_max = [max(dimentions[0][0], dimentions[1][0])/global_scaling, max(dimentions[0][1], dimentions[1][1])/global_scaling]
-
-			var chunk_min = [floor(coord_min[0]/16), floor(coord_min[1]/16)]
-			var chunk_max = [floor(coord_max[0]/16), floor(coord_max[1]/16)]
-			
-			for i in range(chunk_min[0], chunk_max[0]+1):
-				for j in range(chunk_min[1], chunk_max[1]+1):
-					var key = str(i) + " " + str(j)
-					if(!chunks.has(key)):
-						return
-					var range_x = [i*grid_width, (i+1)*grid_width-1]
-					var range_y = [j*grid_height, (j+1)*grid_height-1]
-					var local_min = [coord_min[0], coord_min[1]]
-					var local_max = [coord_max[0], coord_max[1]]
-					
-					if(local_min[0] < range_x[0]):
-						local_min[0] = range_x[0]
-					if(local_min[1] < range_y[0]):
-						local_min[1] = range_y[0]
-						
-					if(local_max[0] > range_x[1]):
-						local_max[0] = range_x[1]
-					if(local_max[1] > range_y[1]):
-						local_max[1] = range_y[1]
-					
-					local_min[0] -= i*grid_width
-					local_min[1] -= j*grid_height
-					local_max[0] -= i*grid_width
-					local_max[1] -= j*grid_height
-					
-					delete_from_grid(key, local_min, local_max)
-								
-					#update_chunk(chunks[key])
-		
-		if(is_room):
-			preview_line.queue_free()
-			update = false
-			is_room = false
-			
-			var coord_min = [min(dimentions[0][0], dimentions[1][0])/global_scaling, min(dimentions[0][1], dimentions[1][1])/global_scaling]
-			var coord_max = [max(dimentions[0][0], dimentions[1][0])/global_scaling, max(dimentions[0][1], dimentions[1][1])/global_scaling]
-
-			var chunk_min = [floor(coord_min[0]/16), floor(coord_min[1]/16)]
-			var chunk_max = [floor(coord_max[0]/16), floor(coord_max[1]/16)]
-			
-			for i in range(chunk_min[0], chunk_max[0]+1):
-				for j in range(chunk_min[1], chunk_max[1]+1):
-					var key = str(i) + " " + str(j)
-					if(!chunks.has(key)):
-						#draw_grid(grid_width, grid_height, Vector2(i, j))
-						#debug_chunk_border(grid_width, grid_height, Vector2(i, j))
-						generate_chunk(i, j)
-						
-					var range_x = [i*grid_width, (i+1)*grid_width-1]
-					var range_y = [j*grid_height, (j+1)*grid_height-1]
-					var local_min = [coord_min[0], coord_min[1]]
-					var local_max = [coord_max[0], coord_max[1]]
-					
-					if(local_min[0] < range_x[0]):
-						local_min[0] = range_x[0]
-					if(local_min[1] < range_y[0]):
-						local_min[1] = range_y[0]
-						
-					if(local_max[0] > range_x[1]):
-						local_max[0] = range_x[1]
-					if(local_max[1] > range_y[1]):
-						local_max[1] = range_y[1]
-					
-					local_min[0] -= i*grid_width
-					local_min[1] -= j*grid_height
-					local_max[0] -= i*grid_width
-					local_max[1] -= j*grid_height
-					
-					var transfer = [false, false, false, false]
-					if(j != chunk_min[1]):
-						transfer[0] = true
-					if(i != chunk_max[0]):
-						transfer[1] = true
-					if(j != chunk_max[1]):
-						transfer[2] = true
-					if(i != chunk_min[0]):
-						transfer[3] = true
-					save_room_to_grid(key, local_min, local_max, transfer)
-								
-					#update_chunk(chunks[key])
-						
-						
-		if(is_tunnel):
-			preview_line.queue_free()
-			update = false
-			is_tunnel = false
-			
-			var first_chunk = floor(path[0] / (global_scaling * grid_width))
-			var turn_chunk = floor(path[1] / (global_scaling * grid_width))
-			var last_chunk = floor(path[2] / (global_scaling * grid_width))
-
-			for i in range(min(first_chunk[0], turn_chunk[0]), max(first_chunk[0], turn_chunk[0]) + 1):
-				var chunk_range = [i*global_scaling*grid_width, ((i+1)*grid_width-1)*global_scaling]
-				var p = [path[0][0], path[1][0]]
-				if (p[0] < chunk_range[0]):
-					p[0] = chunk_range[0]
-				elif (p[0] > chunk_range[1]):
-					p[0] = chunk_range[1]
-				if (p[1] < chunk_range[0]):
-					p[1] = chunk_range[0]
-				elif (p[1] > chunk_range[1]):
-					p[1] = chunk_range[1]
-				var key = str(i) + " " + str(first_chunk[1])
-				if(!chunks.has(key)):
-					#draw_grid(grid_width, grid_height, Vector2(i, first_chunk[1]))
-					#debug_chunk_border(grid_width, grid_height, Vector2(i, first_chunk[1]))
-					generate_chunk(i, first_chunk[1])
-				
-				p[0] -= global_scaling*grid_width*(i)
-				p[1] -= global_scaling*grid_width*(i)
-				var y = path[0][1] - global_scaling*grid_height*first_chunk[1]
-				
-				var transfer = [false, false]
-				if i != (min(first_chunk[0], turn_chunk[0])):
-					transfer[0] = true
-				if i != (max(first_chunk[0], turn_chunk[0])):
-					transfer[1] = true
-				var v1 = Vector2(p[0], y)
-				var v2 = Vector2(p[1], y)
-				if v1 > v2:
-					var temp = v2
-					v2 = v1
-					v1 = temp
-				save_tunnel_to_grid(chunks[key], v1, v2, "horizontal", transfer)
-				#update_chunk(chunks[key])
-					
-			for j in range(min(turn_chunk[1], last_chunk[1]), max(turn_chunk[1], last_chunk[1]) + 1):
-				var chunk_range = [j*global_scaling*grid_height, ((j+1)*grid_height-1)*global_scaling]
-				var p = [path[1][1], path[2][1]]
-				if (p[0] < chunk_range[0]):
-					p[0] = chunk_range[0]
-				elif (p[0] > chunk_range[1]):
-					p[0] = chunk_range[1]
-				if (p[1] < chunk_range[0]):
-					p[1] = chunk_range[0]
-				elif (p[1] > chunk_range[1]):
-					p[1] = chunk_range[1]
-				var key = str(last_chunk[0]) + " " + str(j)
-				if(!chunks.has(key)):
-					#draw_grid(grid_width, grid_height, Vector2(last_chunk[0], j))
-					#debug_chunk_border(grid_width, grid_height, Vector2(j, first_chunk[1]))
-					generate_chunk(last_chunk[0], j)
-				
-				p[0] -= global_scaling*grid_height*(j)
-				p[1] -= global_scaling*grid_height*(j)
-				var x = path[2][0] - global_scaling*grid_width*(turn_chunk[0])
-				
-				var transfer = [false, false]
-				if j != (min(turn_chunk[1], last_chunk[1])):
-					transfer[0] = true
-				if j != (max(turn_chunk[1], last_chunk[1])):
-					transfer[1] = true
-				var v1 = Vector2(x, p[0])
-				var v2 = Vector2(x, p[1])
-				if v1 > v2:
-					var temp = v2
-					v2 = v1
-					v1 = temp
-				save_tunnel_to_grid(chunks[key], v1, v2, "vertical", transfer)
-				#update_chunk(chunks[key])
+		thread = Thread.new()
+		thread.start(_thread_function.bind())
 	
 	if event.is_action_pressed("zoom_in"):
 		$"../Camera2D".zoom *= 2
@@ -323,7 +152,180 @@ func draw_grid (height, width, pos):
 		tline.add_point(Vector2(j * global_scaling + grid_width*global_scaling*pos[0] + dist, grid_height*global_scaling*pos[1] + dist + (height) * global_scaling))
 		tline.default_color = Color.DIM_GRAY
 		$Background.add_child(tline)
+
+func _thread_function():
+	if(delete):
+		preview_line.queue_free()
+		update = false
+		delete = false
 		
+		var coord_min = [min(dimentions[0][0], dimentions[1][0])/global_scaling, min(dimentions[0][1], dimentions[1][1])/global_scaling]
+		var coord_max = [max(dimentions[0][0], dimentions[1][0])/global_scaling, max(dimentions[0][1], dimentions[1][1])/global_scaling]
+
+		var chunk_min = [floor(coord_min[0]/16), floor(coord_min[1]/16)]
+		var chunk_max = [floor(coord_max[0]/16), floor(coord_max[1]/16)]
+		
+		for i in range(chunk_min[0], chunk_max[0]+1):
+			for j in range(chunk_min[1], chunk_max[1]+1):
+				var key = str(i) + " " + str(j)
+				if(!chunks.has(key)):
+					return
+				var range_x = [i*grid_width, (i+1)*grid_width-1]
+				var range_y = [j*grid_height, (j+1)*grid_height-1]
+				var local_min = [coord_min[0], coord_min[1]]
+				var local_max = [coord_max[0], coord_max[1]]
+				
+				if(local_min[0] < range_x[0]):
+					local_min[0] = range_x[0]
+				if(local_min[1] < range_y[0]):
+					local_min[1] = range_y[0]
+					
+				if(local_max[0] > range_x[1]):
+					local_max[0] = range_x[1]
+				if(local_max[1] > range_y[1]):
+					local_max[1] = range_y[1]
+				
+				local_min[0] -= i*grid_width
+				local_min[1] -= j*grid_height
+				local_max[0] -= i*grid_width
+				local_max[1] -= j*grid_height
+				
+				delete_from_grid(key, local_min, local_max)
+							
+				#update_chunk(chunks[key])
+	
+	if(is_room):
+		preview_line.queue_free()
+		update = false
+		is_room = false
+		
+		var coord_min = [min(dimentions[0][0], dimentions[1][0])/global_scaling, min(dimentions[0][1], dimentions[1][1])/global_scaling]
+		var coord_max = [max(dimentions[0][0], dimentions[1][0])/global_scaling, max(dimentions[0][1], dimentions[1][1])/global_scaling]
+
+		var chunk_min = [floor(coord_min[0]/16), floor(coord_min[1]/16)]
+		var chunk_max = [floor(coord_max[0]/16), floor(coord_max[1]/16)]
+		
+		for i in range(chunk_min[0], chunk_max[0]+1):
+			for j in range(chunk_min[1], chunk_max[1]+1):
+				var key = str(i) + " " + str(j)
+				if(!chunks.has(key)):
+					#draw_grid(grid_width, grid_height, Vector2(i, j))
+					#debug_chunk_border(grid_width, grid_height, Vector2(i, j))
+					generate_chunk(i, j)
+					
+				var range_x = [i*grid_width, (i+1)*grid_width-1]
+				var range_y = [j*grid_height, (j+1)*grid_height-1]
+				var local_min = [coord_min[0], coord_min[1]]
+				var local_max = [coord_max[0], coord_max[1]]
+				
+				if(local_min[0] < range_x[0]):
+					local_min[0] = range_x[0]
+				if(local_min[1] < range_y[0]):
+					local_min[1] = range_y[0]
+					
+				if(local_max[0] > range_x[1]):
+					local_max[0] = range_x[1]
+				if(local_max[1] > range_y[1]):
+					local_max[1] = range_y[1]
+				
+				local_min[0] -= i*grid_width
+				local_min[1] -= j*grid_height
+				local_max[0] -= i*grid_width
+				local_max[1] -= j*grid_height
+				
+				var transfer = [false, false, false, false]
+				if(j != chunk_min[1]):
+					transfer[0] = true
+				if(i != chunk_max[0]):
+					transfer[1] = true
+				if(j != chunk_max[1]):
+					transfer[2] = true
+				if(i != chunk_min[0]):
+					transfer[3] = true
+				save_room_to_grid(key, local_min, local_max, transfer)
+							
+				#update_chunk(chunks[key])
+					
+					
+	if(is_tunnel):
+		preview_line.queue_free()
+		update = false
+		is_tunnel = false
+		
+		var first_chunk = floor(path[0] / (global_scaling * grid_width))
+		var turn_chunk = floor(path[1] / (global_scaling * grid_width))
+		var last_chunk = floor(path[2] / (global_scaling * grid_width))
+
+		for i in range(min(first_chunk[0], turn_chunk[0]), max(first_chunk[0], turn_chunk[0]) + 1):
+			var chunk_range = [i*global_scaling*grid_width, ((i+1)*grid_width-1)*global_scaling]
+			var p = [path[0][0], path[1][0]]
+			if (p[0] < chunk_range[0]):
+				p[0] = chunk_range[0]
+			elif (p[0] > chunk_range[1]):
+				p[0] = chunk_range[1]
+			if (p[1] < chunk_range[0]):
+				p[1] = chunk_range[0]
+			elif (p[1] > chunk_range[1]):
+				p[1] = chunk_range[1]
+			var key = str(i) + " " + str(first_chunk[1])
+			if(!chunks.has(key)):
+				#draw_grid(grid_width, grid_height, Vector2(i, first_chunk[1]))
+				#debug_chunk_border(grid_width, grid_height, Vector2(i, first_chunk[1]))
+				generate_chunk(i, first_chunk[1])
+			
+			p[0] -= global_scaling*grid_width*(i)
+			p[1] -= global_scaling*grid_width*(i)
+			var y = path[0][1] - global_scaling*grid_height*first_chunk[1]
+			
+			var transfer = [false, false]
+			if i != (min(first_chunk[0], turn_chunk[0])):
+				transfer[0] = true
+			if i != (max(first_chunk[0], turn_chunk[0])):
+				transfer[1] = true
+			var v1 = Vector2(p[0], y)
+			var v2 = Vector2(p[1], y)
+			if v1 > v2:
+				var temp = v2
+				v2 = v1
+				v1 = temp
+			save_tunnel_to_grid(chunks[key], v1, v2, "horizontal", transfer)
+			#update_chunk(chunks[key])
+				
+		for j in range(min(turn_chunk[1], last_chunk[1]), max(turn_chunk[1], last_chunk[1]) + 1):
+			var chunk_range = [j*global_scaling*grid_height, ((j+1)*grid_height-1)*global_scaling]
+			var p = [path[1][1], path[2][1]]
+			if (p[0] < chunk_range[0]):
+				p[0] = chunk_range[0]
+			elif (p[0] > chunk_range[1]):
+				p[0] = chunk_range[1]
+			if (p[1] < chunk_range[0]):
+				p[1] = chunk_range[0]
+			elif (p[1] > chunk_range[1]):
+				p[1] = chunk_range[1]
+			var key = str(last_chunk[0]) + " " + str(j)
+			if(!chunks.has(key)):
+				#draw_grid(grid_width, grid_height, Vector2(last_chunk[0], j))
+				#debug_chunk_border(grid_width, grid_height, Vector2(j, first_chunk[1]))
+				generate_chunk(last_chunk[0], j)
+			
+			p[0] -= global_scaling*grid_height*(j)
+			p[1] -= global_scaling*grid_height*(j)
+			var x = path[2][0] - global_scaling*grid_width*(turn_chunk[0])
+			
+			var transfer = [false, false]
+			if j != (min(turn_chunk[1], last_chunk[1])):
+				transfer[0] = true
+			if j != (max(turn_chunk[1], last_chunk[1])):
+				transfer[1] = true
+			var v1 = Vector2(x, p[0])
+			var v2 = Vector2(x, p[1])
+			if v1 > v2:
+				var temp = v2
+				v2 = v1
+				v1 = temp
+			save_tunnel_to_grid(chunks[key], v1, v2, "vertical", transfer)
+			#update_chunk(chunks[key])
+
 func draw_routes(c, v1, v2):
 	for i in range(v1[0], v2[0]):
 		for j in range(v1[1], v2[1]):
