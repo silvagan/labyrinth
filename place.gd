@@ -7,15 +7,19 @@ extends Node
 @onready var tunnel = preload("res://tunnel.tscn")
 @onready var chunk = preload("res://chunk.tscn")
 
+
+@onready var pattern = $"../TileMap".tile_set.get_pattern(0)
+
 @export var grid_width = 16
 @export var grid_height = 16
-@export var global_scaling = 100
+@export var global_scaling = 1000
 
 var chunks = {}
 var start = false
 var update = false
 var is_room = false
 var is_tunnel = false
+var delete = false
 var line_start = Vector2(0, 0)
 var path = [null, null, null]
 var dimentions = [null, null]
@@ -24,10 +28,16 @@ func _ready():
 	get_window().position = Vector2(320, 180)
 	DisplayServer.window_set_size(Vector2i(1920, 1080))
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	draw_grid(grid_width, grid_height, Vector2(0, 0))
-	debug_chunk_border(grid_width, grid_height, Vector2(0, 0))
+	#draw_grid(grid_width, grid_height, Vector2(0, 0))
+	#debug_chunk_border(grid_width, grid_height, Vector2(0, 0))
 	generate_chunk(0, 0)
 	update_chunk(chunks["0 0"])
+	
+	
+	$"../TileMap".set_pattern(0, Vector2i(0, 0), pattern)
+	$"../TileMap".set_pattern(0, Vector2i(10, 0), pattern)
+	$"../TileMap".set_pattern(0, Vector2i(0, 10), pattern)
+	
 
 func _process(delta):
 	var mouse_pos = fit_into_grid((get_viewport().get_mouse_position() / Vector2($"../Camera2D".zoom[0], $"../Camera2D".zoom[1]))+$"../Camera2D".position)
@@ -39,9 +49,9 @@ func _process(delta):
 			preview_line.add_point(line_start)
 			preview_line.add_point(line_start)
 			path[0] = line_start
-			preview_line.width = 60
+			preview_line.width = 500
 			start = false
-			add_child(preview_line)
+			$Top.add_child(preview_line)
 		if update:
 			path[1] = Vector2(mouse_pos[0], line_start[1])
 			path[2] = mouse_pos
@@ -56,38 +66,63 @@ func _process(delta):
 			preview_line.add_point(Vector2((line_start[0]+mouse_pos[0])/2, mouse_pos[1]))
 			dimentions[0] = line_start
 			start = false
-			add_child(preview_line)
+			$Top.add_child(preview_line)
 		if update:
 			dimentions[1] = mouse_pos
-			preview_line.width = (abs(line_start[0]-mouse_pos[0]))+90
+			preview_line.width = (abs(line_start[0]-mouse_pos[0]))+900
 			preview_line.default_color = Color(Color.WHITE, 0.5)
 			if(line_start[1] > mouse_pos[1]):
-				preview_line.set_point_position(0, Vector2((line_start[0]+mouse_pos[0])/2, line_start[1]+45))
-				preview_line.set_point_position(1, Vector2((line_start[0]+mouse_pos[0])/2, mouse_pos[1]-45))
+				preview_line.set_point_position(0, Vector2((line_start[0]+mouse_pos[0])/2, line_start[1]+450))
+				preview_line.set_point_position(1, Vector2((line_start[0]+mouse_pos[0])/2, mouse_pos[1]-450))
 			else:
-				preview_line.set_point_position(0, Vector2((line_start[0]+mouse_pos[0])/2, line_start[1]-45))
-				preview_line.set_point_position(1, Vector2((line_start[0]+mouse_pos[0])/2, mouse_pos[1]+45))
+				preview_line.set_point_position(0, Vector2((line_start[0]+mouse_pos[0])/2, line_start[1]-450))
+				preview_line.set_point_position(1, Vector2((line_start[0]+mouse_pos[0])/2, mouse_pos[1]+450))
 			
+	if delete:
+		if start:
+			
+			preview_line = Line2D.new()
+			preview_line.add_point(Vector2((line_start[0]+mouse_pos[0])/2, line_start[1]))
+			preview_line.add_point(Vector2((line_start[0]+mouse_pos[0])/2, mouse_pos[1]))
+			dimentions[0] = line_start
+			start = false
+			$Top.add_child(preview_line)
+		if update:
+			dimentions[1] = mouse_pos
+			preview_line.width = (abs(line_start[0]-mouse_pos[0]))+900
+			preview_line.default_color = Color(Color.RED, 0.5)
+			if(line_start[1] > mouse_pos[1]):
+				preview_line.set_point_position(0, Vector2((line_start[0]+mouse_pos[0])/2, line_start[1]+450))
+				preview_line.set_point_position(1, Vector2((line_start[0]+mouse_pos[0])/2, mouse_pos[1]-450))
+			else:
+				preview_line.set_point_position(0, Vector2((line_start[0]+mouse_pos[0])/2, line_start[1]-450))
+				preview_line.set_point_position(1, Vector2((line_start[0]+mouse_pos[0])/2, mouse_pos[1]+450))
+		
 var screen = Vector2i(1920, 1080)
 func _input(event):
-	if event.is_action_pressed("shift_click"):
+	if event.is_action_pressed("shift_left_click"):
 		line_start = fit_into_grid((get_viewport().get_mouse_position() / Vector2($"../Camera2D".zoom[0], $"../Camera2D".zoom[1]))+$"../Camera2D".position)
 		is_room = true
 		start = true
 		update = true
-	elif event.is_action_pressed("mouse_click"):
+	elif event.is_action_pressed("left_click"):
 		line_start = fit_into_grid((get_viewport().get_mouse_position() / Vector2($"../Camera2D".zoom[0], $"../Camera2D".zoom[1]))+$"../Camera2D".position)
 		is_tunnel = true
 		start = true
 		update = true
-	if event.is_action_released("mouse_click"):
-		if(is_room):
+	if event.is_action_pressed("right_click"):
+		line_start = fit_into_grid((get_viewport().get_mouse_position() / Vector2($"../Camera2D".zoom[0], $"../Camera2D".zoom[1]))+$"../Camera2D".position)
+		delete = true
+		start = true
+		update = true
+	if event.is_action_released("left_click") || event.is_action_released("right_click"):
+		if(delete):
 			preview_line.queue_free()
 			update = false
-			is_room = false
+			delete = false
 			
-			var coord_min = [min(dimentions[0][0], dimentions[1][0])/100, min(dimentions[0][1], dimentions[1][1])/100]
-			var coord_max = [max(dimentions[0][0], dimentions[1][0])/100, max(dimentions[0][1], dimentions[1][1])/100]
+			var coord_min = [min(dimentions[0][0], dimentions[1][0])/global_scaling, min(dimentions[0][1], dimentions[1][1])/global_scaling]
+			var coord_max = [max(dimentions[0][0], dimentions[1][0])/global_scaling, max(dimentions[0][1], dimentions[1][1])/global_scaling]
 
 			var chunk_min = [floor(coord_min[0]/16), floor(coord_min[1]/16)]
 			var chunk_max = [floor(coord_max[0]/16), floor(coord_max[1]/16)]
@@ -96,8 +131,48 @@ func _input(event):
 				for j in range(chunk_min[1], chunk_max[1]+1):
 					var key = str(i) + " " + str(j)
 					if(!chunks.has(key)):
-						draw_grid(grid_width, grid_height, Vector2(i, j))
-						debug_chunk_border(grid_width, grid_height, Vector2(i, j))
+						return
+					var range_x = [i*grid_width, (i+1)*grid_width-1]
+					var range_y = [j*grid_height, (j+1)*grid_height-1]
+					var local_min = [coord_min[0], coord_min[1]]
+					var local_max = [coord_max[0], coord_max[1]]
+					
+					if(local_min[0] < range_x[0]):
+						local_min[0] = range_x[0]
+					if(local_min[1] < range_y[0]):
+						local_min[1] = range_y[0]
+						
+					if(local_max[0] > range_x[1]):
+						local_max[0] = range_x[1]
+					if(local_max[1] > range_y[1]):
+						local_max[1] = range_y[1]
+					
+					local_min[0] -= i*grid_width
+					local_min[1] -= j*grid_height
+					local_max[0] -= i*grid_width
+					local_max[1] -= j*grid_height
+					
+					delete_from_grid(key, local_min, local_max)
+								
+					update_chunk(chunks[key])
+		
+		if(is_room):
+			preview_line.queue_free()
+			update = false
+			is_room = false
+			
+			var coord_min = [min(dimentions[0][0], dimentions[1][0])/global_scaling, min(dimentions[0][1], dimentions[1][1])/global_scaling]
+			var coord_max = [max(dimentions[0][0], dimentions[1][0])/global_scaling, max(dimentions[0][1], dimentions[1][1])/global_scaling]
+
+			var chunk_min = [floor(coord_min[0]/16), floor(coord_min[1]/16)]
+			var chunk_max = [floor(coord_max[0]/16), floor(coord_max[1]/16)]
+			
+			for i in range(chunk_min[0], chunk_max[0]+1):
+				for j in range(chunk_min[1], chunk_max[1]+1):
+					var key = str(i) + " " + str(j)
+					if(!chunks.has(key)):
+						#draw_grid(grid_width, grid_height, Vector2(i, j))
+						#debug_chunk_border(grid_width, grid_height, Vector2(i, j))
 						generate_chunk(i, j)
 						
 					var range_x = [i*grid_width, (i+1)*grid_width-1]
@@ -156,13 +231,13 @@ func _input(event):
 					p[1] = chunk_range[1]
 				var key = str(i) + " " + str(first_chunk[1])
 				if(!chunks.has(key)):
-					draw_grid(grid_width, grid_height, Vector2(i, first_chunk[1]))
-					debug_chunk_border(grid_width, grid_height, Vector2(i, first_chunk[1]))
+					#draw_grid(grid_width, grid_height, Vector2(i, first_chunk[1]))
+					#debug_chunk_border(grid_width, grid_height, Vector2(i, first_chunk[1]))
 					generate_chunk(i, first_chunk[1])
 				
-				p[0] -= 100*grid_width*(i)
-				p[1] -= 100*grid_width*(i)
-				var y = path[0][1] - 100*grid_height*first_chunk[1]
+				p[0] -= global_scaling*grid_width*(i)
+				p[1] -= global_scaling*grid_width*(i)
+				var y = path[0][1] - global_scaling*grid_height*first_chunk[1]
 				
 				var transfer = [false, false]
 				if i != (min(first_chunk[0], turn_chunk[0])):
@@ -191,13 +266,13 @@ func _input(event):
 					p[1] = chunk_range[1]
 				var key = str(last_chunk[0]) + " " + str(j)
 				if(!chunks.has(key)):
-					draw_grid(grid_width, grid_height, Vector2(last_chunk[0], j))
-					debug_chunk_border(grid_width, grid_height, Vector2(j, first_chunk[1]))
+					#draw_grid(grid_width, grid_height, Vector2(last_chunk[0], j))
+					#debug_chunk_border(grid_width, grid_height, Vector2(j, first_chunk[1]))
 					generate_chunk(last_chunk[0], j)
 				
-				p[0] -= 100*grid_height*(j)
-				p[1] -= 100*grid_height*(j)
-				var x = path[2][0] - 100*grid_width*(turn_chunk[0])
+				p[0] -= global_scaling*grid_height*(j)
+				p[1] -= global_scaling*grid_height*(j)
+				var x = path[2][0] - global_scaling*grid_width*(turn_chunk[0])
 				
 				var transfer = [false, false]
 				if j != (min(turn_chunk[1], last_chunk[1])):
@@ -232,15 +307,15 @@ func draw_grid (height, width, pos):
 	var tline = Line2D.new()
 	for i in height+1:
 		tline = Line2D.new()
-		tline.add_point(Vector2(grid_width*100*pos[0] + dist, i * global_scaling + grid_height*100*pos[1] + dist))
-		tline.add_point(Vector2((width) * global_scaling + grid_width*100*pos[0] + dist, i * global_scaling + grid_height*100*pos[1] + dist))
+		tline.add_point(Vector2(grid_width*global_scaling*pos[0] + dist, i * global_scaling + grid_height*global_scaling*pos[1] + dist))
+		tline.add_point(Vector2((width) * global_scaling + grid_width*global_scaling*pos[0] + dist, i * global_scaling + grid_height*global_scaling*pos[1] + dist))
 		tline.default_color = Color.DIM_GRAY
 		$Background.add_child(tline)
 		
 	for j in width+1:
 		tline = Line2D.new()
-		tline.add_point(Vector2(j * global_scaling + grid_width*100*pos[0] + dist, grid_height*100*pos[1] + dist))
-		tline.add_point(Vector2(j * global_scaling + grid_width*100*pos[0] + dist, grid_height*100*pos[1] + dist + (height) * global_scaling))
+		tline.add_point(Vector2(j * global_scaling + grid_width*global_scaling*pos[0] + dist, grid_height*global_scaling*pos[1] + dist))
+		tline.add_point(Vector2(j * global_scaling + grid_width*global_scaling*pos[0] + dist, grid_height*global_scaling*pos[1] + dist + (height) * global_scaling))
 		tline.default_color = Color.DIM_GRAY
 		$Background.add_child(tline)
 		
@@ -280,6 +355,7 @@ func save_tunnel_to_grid(c, v1, v2, axis, transfer):
 							temp.left = true
 							if c.tiles[x+i-1][y] is Room:
 								c.tiles[x+i-1][y].corridors[1] = true
+						$"../TileMap".add_child(temp)
 						c.tiles[x+i][v1[1]/global_scaling] = temp
 					
 			match determine_class(c.tiles[x+count][y]):
@@ -287,6 +363,9 @@ func save_tunnel_to_grid(c, v1, v2, axis, transfer):
 					if count != 0:
 						if c.tiles[x+count-1][y] is Tunnel:
 							c.tiles[x+count][y].corridors[3] = true
+						if c.tiles[x+count-1][y] is Room && c.tiles[x+count-1][y].right:
+								c.tiles[x+count-1][y].corridors[1] = true
+								c.tiles[x+count][y].corridors[3] = true
 				"Tunnel":
 					if count != 0:
 						c.tiles[x+count][y].left = true
@@ -298,6 +377,7 @@ func save_tunnel_to_grid(c, v1, v2, axis, transfer):
 						temp.left = true
 						if c.tiles[x+count-1][y] is Room:
 							c.tiles[x+count-1][y].corridors[1] = true
+					$"../TileMap".add_child(temp)
 					c.tiles[x+count][y] = temp
 					
 			if transfer[0]:
@@ -336,6 +416,7 @@ func save_tunnel_to_grid(c, v1, v2, axis, transfer):
 							temp.up = true
 							if c.tiles[x][y+i-1] is Room:
 								c.tiles[x][y+i-1].corridors[2] = true
+						$"../TileMap".add_child(temp)
 						c.tiles[x][y+i] = temp
 						pass
 					
@@ -344,6 +425,9 @@ func save_tunnel_to_grid(c, v1, v2, axis, transfer):
 					if count != 0:
 						if c.tiles[x][y+count-1] is Tunnel:
 							c.tiles[x][y+count].corridors[0] = true
+						if c.tiles[x][y+count-1] is Room && c.tiles[x][y+count-1].top && c.tiles[x][y+count].bottom:
+								c.tiles[x][y+count-1].corridors[2] = true
+								c.tiles[x][y+count].corridors[0] = true
 				"Tunnel":
 					if (count != 0):
 						c.tiles[x][y+count].up = true
@@ -351,26 +435,37 @@ func save_tunnel_to_grid(c, v1, v2, axis, transfer):
 							c.tiles[x][y+count-1].corridors[2] = true
 				"Tile":
 					var temp = tunnel.instantiate()
-					temp.up = true
+					if (count != 0):
+						temp.up = true
 					if c.tiles[x][y+count-1] is Room:
 						c.tiles[x][y+count-1].corridors[2] = true
+					$"../TileMap".add_child(temp)
 					c.tiles[x][y+count] = temp
 			if transfer[0]:
-				if c.tiles[x][y] is Tunnel:
-					c.tiles[x][y].up = true
 				if c.tiles[x][y] is Room && c.tiles[x][y].bottom:
 					c.tiles[x][y].corridors[0] = true
+				if c.tiles[x][y] is Tunnel:
+					c.tiles[x][y].up = true
 			if transfer[1]:
-				if c.tiles[x][y+count] is Tunnel:
-					c.tiles[x][y+count].down = true
 				if c.tiles[x][y+count] is Room && c.tiles[x][y+count].top:
 					c.tiles[x][y+count].corridors[2] = true
+				if c.tiles[x][y+count] is Tunnel:
+					c.tiles[x][y+count].down = true
+
+func delete_from_grid(key, local_min, local_max):
+	for x in range(local_min[0], local_max[0]+1):
+		for y in range(local_min[1], local_max[1]+1):
+			var temp = tile.instantiate()
+			$"../TileMap".add_child(temp)
+			chunks[key].tiles[x][y] = temp
+				
 
 func save_room_to_grid(key, local_min, local_max, transfer):
 	for x in range(local_min[0], local_max[0]+1):
 		for y in range(local_min[1], local_max[1]+1):
 			if chunks[key].tiles[x][y] is Tile :
 				var temp = room.instantiate()
+				$"../TileMap".add_child(temp)
 				chunks[key].tiles[x][y] = temp
 				
 			if(x == local_min[0]):
@@ -413,12 +508,19 @@ func initialize_table(c):
 		c.tiles.append([])
 		for j in grid_height:
 			var temp = tile.instantiate()
+			$"../TileMap".add_child(temp)
 			c.tiles[i].append(temp) # Set a starter value for each position
+
+func clear_chunk(x, y):
+	var new_key = str(x) + " " + str(y)
+	chunks[new_key].tiles
+
 
 func generate_chunk(x, y):
 	var new_key = str(x) + " " + str(y)
 	var node_root = CanvasLayer.new()
 	node_root.follow_viewport_enabled = true
+	
 	add_child(node_root)
 	var c = chunk.instantiate()
 	c.root = node_root
