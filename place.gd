@@ -14,6 +14,8 @@ extends Node
 @export var grid_height = 16
 @export var global_scaling = 1000
 
+var thread: Thread
+
 var chunks = {}
 var start = false
 var update = false
@@ -116,6 +118,9 @@ func _input(event):
 		start = true
 		update = true
 	if event.is_action_released("left_click") || event.is_action_released("right_click"):
+		
+		#thread = Thread.new()
+		#thread.start(_thread_function.bind())
 		if(delete):
 			preview_line.queue_free()
 			update = false
@@ -154,7 +159,7 @@ func _input(event):
 					
 					delete_from_grid(key, local_min, local_max)
 								
-					update_chunk(chunks[key])
+					#update_chunk(chunks[key])
 		
 		if(is_room):
 			preview_line.queue_free()
@@ -206,7 +211,7 @@ func _input(event):
 						transfer[3] = true
 					save_room_to_grid(key, local_min, local_max, transfer)
 								
-					update_chunk(chunks[key])
+					#update_chunk(chunks[key])
 						
 						
 		if(is_tunnel):
@@ -251,7 +256,7 @@ func _input(event):
 					v2 = v1
 					v1 = temp
 				save_tunnel_to_grid(chunks[key], v1, v2, "horizontal", transfer)
-				update_chunk(chunks[key])
+				#update_chunk(chunks[key])
 					
 			for j in range(min(turn_chunk[1], last_chunk[1]), max(turn_chunk[1], last_chunk[1]) + 1):
 				var chunk_range = [j*global_scaling*grid_height, ((j+1)*grid_height-1)*global_scaling]
@@ -286,7 +291,7 @@ func _input(event):
 					v2 = v1
 					v1 = temp
 				save_tunnel_to_grid(chunks[key], v1, v2, "vertical", transfer)
-				update_chunk(chunks[key])
+				#update_chunk(chunks[key])
 	
 	if event.is_action_pressed("zoom_in"):
 		$"../Camera2D".zoom *= 2
@@ -319,9 +324,9 @@ func draw_grid (height, width, pos):
 		tline.default_color = Color.DIM_GRAY
 		$Background.add_child(tline)
 		
-func draw_routes(c):
-	for i in range(0, grid_width):
-		for j in range(0, grid_height):
+func draw_routes(c, v1, v2):
+	for i in range(v1[0], v2[0]):
+		for j in range(v1[1], v2[1]):
 			var disp = Vector2(c.x * global_scaling * grid_width, c.y * global_scaling * grid_height)
 			c.tiles[i][j].visualize(c, i, j, disp, global_scaling)
 			
@@ -329,7 +334,7 @@ func save_tunnel_to_grid(c, v1, v2, axis, transfer):
 
 	var x = v1[0]/global_scaling
 	var y = v1[1]/global_scaling
-
+	var disp = Vector2(c.x * global_scaling * grid_width, c.y * global_scaling * grid_height)
 	match axis:
 		"horizontal":
 			var count = (v2[0] - v1[0]) / global_scaling
@@ -357,6 +362,8 @@ func save_tunnel_to_grid(c, v1, v2, axis, transfer):
 								c.tiles[x+i-1][y].corridors[1] = true
 						$"../TileMap".add_child(temp)
 						c.tiles[x+i][v1[1]/global_scaling] = temp
+				if (i!=0):
+					c.tiles[x+i][y].visualize(c, x+i, y, disp, global_scaling)
 					
 			match determine_class(c.tiles[x+count][y]):
 				"Room":
@@ -390,6 +397,8 @@ func save_tunnel_to_grid(c, v1, v2, axis, transfer):
 					c.tiles[x+count][y].corridors[1] = true
 				if c.tiles[x+count][y] is Tunnel:
 					c.tiles[x+count][y].right = true
+			c.tiles[x+count][y].visualize(c, x+count, y, disp, global_scaling)
+			c.tiles[x][y].visualize(c, x, y, disp, global_scaling)
 				
 		"vertical":
 			var count = (v2[1] - v1[1]) / global_scaling
@@ -403,10 +412,10 @@ func save_tunnel_to_grid(c, v1, v2, axis, transfer):
 							if c.tiles[x][y+i-1] is Room:
 								c.tiles[x][y+i-1].corridors[2] = true
 					"Room":
-						if(i != 0):
+						if(i != 1):
 							if c.tiles[x][y+i-1] is Tunnel:
 								c.tiles[x][y+i].corridors[0] = true
-							if c.tiles[x][y+i-1] is Room && c.tiles[x][y+i-1].top && c.tiles[x][y+i].bottom:
+							if c.tiles[x][y+i-1] is Room && c.tiles[x][y+i-1].bottom && c.tiles[x][y+i].top:
 								c.tiles[x][y+i-1].corridors[2] = true
 								c.tiles[x][y+i].corridors[0] = true
 					"Tile":
@@ -419,13 +428,14 @@ func save_tunnel_to_grid(c, v1, v2, axis, transfer):
 						$"../TileMap".add_child(temp)
 						c.tiles[x][y+i] = temp
 						pass
-					
+				if (i!=0):
+					c.tiles[x][y+i].visualize(c, x, y+i, disp, global_scaling)
 			match determine_class(c.tiles[x][y+count]):
 				"Room":
 					if count != 0:
 						if c.tiles[x][y+count-1] is Tunnel:
 							c.tiles[x][y+count].corridors[0] = true
-						if c.tiles[x][y+count-1] is Room && c.tiles[x][y+count-1].top && c.tiles[x][y+count].bottom:
+						if c.tiles[x][y+count-1] is Room && c.tiles[x][y+count-1].bottom && c.tiles[x][y+count].top:
 								c.tiles[x][y+count-1].corridors[2] = true
 								c.tiles[x][y+count].corridors[0] = true
 				"Tunnel":
@@ -451,6 +461,9 @@ func save_tunnel_to_grid(c, v1, v2, axis, transfer):
 					c.tiles[x][y+count].corridors[2] = true
 				if c.tiles[x][y+count] is Tunnel:
 					c.tiles[x][y+count].down = true
+					
+			c.tiles[x][y].visualize(c, x, y, disp, global_scaling)
+			c.tiles[x][y+count].visualize(c, x, y+count, disp, global_scaling)
 
 func delete_from_grid(key, local_min, local_max):
 	for x in range(local_min[0], local_max[0]+1):
@@ -461,6 +474,7 @@ func delete_from_grid(key, local_min, local_max):
 				
 
 func save_room_to_grid(key, local_min, local_max, transfer):
+	var disp = Vector2(chunks[key].x * global_scaling * grid_width, chunks[key].y * global_scaling * grid_height)
 	for x in range(local_min[0], local_max[0]+1):
 		for y in range(local_min[1], local_max[1]+1):
 			if chunks[key].tiles[x][y] is Tile :
@@ -475,9 +489,9 @@ func save_room_to_grid(key, local_min, local_max, transfer):
 				
 				
 			if(y == local_min[1]):
-				chunks[key].tiles[x][y].bottom = true
-			if(y == local_max[1]):
 				chunks[key].tiles[x][y].top = true
+			if(y == local_max[1]):
+				chunks[key].tiles[x][y].bottom = true
 				
 			if transfer[2] && y == local_max[1]:
 				chunks[key].tiles[x][y].top = false
@@ -487,6 +501,8 @@ func save_room_to_grid(key, local_min, local_max, transfer):
 				chunks[key].tiles[x][y].bottom = false
 			if transfer[3] && x == local_min[0]:
 				chunks[key].tiles[x][y].left = false
+				
+			chunks[key].tiles[x][y].visualize(chunks[key], x, y, disp, global_scaling)
 			
 				
 func determine_class(t):
@@ -501,7 +517,14 @@ func update_chunk(c):
 	for n in c.root.get_children():
 		c.root.remove_child(n)
 		n.queue_free()
-	draw_routes(c)
+	draw_routes(c, Vector2(0,0), Vector2(grid_width,grid_height))
+	
+func update_tile(c, i, j):
+	var n = i+j*16
+	if(n != 0):
+		c.root.get_child(n).queue_free()
+	var disp = Vector2(c.x * global_scaling * grid_width, c.y * global_scaling * grid_height)
+	c.tiles[i][j].visualize(c, i, j, disp, global_scaling)
 
 func initialize_table(c):
 	for i in grid_width:
@@ -510,6 +533,7 @@ func initialize_table(c):
 			var temp = tile.instantiate()
 			$"../TileMap".add_child(temp)
 			c.tiles[i].append(temp) # Set a starter value for each position
+	update_chunk(c)
 
 func clear_chunk(x, y):
 	var new_key = str(x) + " " + str(y)
