@@ -1,0 +1,45 @@
+[gd_scene load_steps=6 format=3 uid="uid://dv2stuosd2v67"]
+
+[ext_resource type="Script" path="res://labyrinth.gd" id="1_pxbbn"]
+[ext_resource type="Script" path="res://place.gd" id="1_uolgy"]
+[ext_resource type="Script" path="res://camera2D.gd" id="2_k4a2t"]
+[ext_resource type="PackedScene" uid="uid://cclijasafom6d" path="res://explorer.tscn" id="2_oxceo"]
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_imwvi"]
+source_geometry_group_name = &"navigation_polygon_source_group"
+
+[node name="Labyrinth" type="Node2D"]
+script = ExtResource("1_pxbbn")
+
+[node name="Dynamic" type="CanvasLayer" parent="."]
+layer = 4
+follow_viewport_enabled = true
+
+[node name="Explorer" parent="Dynamic" instance=ExtResource("2_oxceo")]
+visible = false
+top_level = true
+z_index = 10
+y_sort_enabled = true
+
+[node name="Visuals" type="Node" parent="."]
+script = ExtResource("1_uolgy")
+
+[node name="Background" type="CanvasLayer" parent="Visuals"]
+layer = 0
+follow_viewport_enabled = true
+
+[node name="OnTop" type="CanvasLayer" parent="Visuals"]
+layer = 2
+follow_viewport_enabled = true
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 10.0
+
+[node name="Camera2D" type="Camera2D" parent="."]
+anchor_mode = 0
+script = ExtResource("2_k4a2t")
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
+navigation_polygon = SubResource("NavigationPolygon_imwvi")
+
+[connection signal="timeout" from="Timer" to="Visuals" method="_on_timer_timeout"]

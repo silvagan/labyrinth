@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://dv2stuosd2v67"]
+
+[ext_resource type="Script" path="res://place.gd" id="1_uolgy"]
+[ext_resource type="Script" path="res://camera2D.gd" id="2_k4a2t"]
+
+[node name="Labyrinth" type="Node2D"]
+
+[node name="Visuals" type="Node" parent="."]
+script = ExtResource("1_uolgy")
+grid_width = null
+grid_height = null
+global_scaling = null
+
+[node name="Background" type="CanvasLayer" parent="Visuals"]
+layer = 0
+follow_viewport_enabled = true
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 5.0
+
+[node name="Camera2D" type="Camera2D" parent="."]
+anchor_mode = 0
+script = ExtResource("2_k4a2t")
+
+[connection signal="timeout" from="Timer" to="Visuals" method="_on_timer_timeout"]

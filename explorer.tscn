@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://cclijasafom6d"]
+
+[ext_resource type="Texture2D" uid="uid://c1gtlh2wegcps" path="res://resources/t3.png" id="1_3jtax"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_6hrk6"]
+radius = 7.0
+
+[node name="Explorer" type="CharacterBody2D"]
+
+[node name="Body" type="Sprite2D" parent="."]
+scale = Vector2(0.015, 0.015)
+texture = ExtResource("1_3jtax")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_6hrk6")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
