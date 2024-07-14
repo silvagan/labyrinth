@@ -34,7 +34,7 @@ func _ready():
 	#debug_chunk_border(grid_width, grid_height, Vector2(0, 0))
 	generate_chunk(0, 0)
 	update_chunk(chunks["0 0"])
-	
+	save_room_to_grid("0 0", Vector2(7,7), Vector2(8,8), [false, false, false, false])
 	
 	$"../TileMap".set_pattern(0, Vector2i(0, 0), pattern)
 	$"../TileMap".set_pattern(0, Vector2i(10, 0), pattern)
@@ -159,7 +159,7 @@ func _input(event):
 					
 					delete_from_grid(key, local_min, local_max)
 								
-					#update_chunk(chunks[key])
+					update_chunk(chunks[key])
 		
 		if(is_room):
 			preview_line.queue_free()
@@ -295,13 +295,13 @@ func _input(event):
 	
 	if event.is_action_pressed("zoom_in"):
 		$"../Camera2D".zoom *= 2
-		$"../Camera2D".position[0] += screen[0]/4
-		$"../Camera2D".position[1] += screen[1]/4
+		$"../Camera2D".position[0] += screen[0]*5/4
+		$"../Camera2D".position[1] += screen[1]*5/4
 		screen /= 2
 	if event.is_action_pressed("zoom_out"):
 		$"../Camera2D".zoom /= 2
-		$"../Camera2D".position[0] -= screen[0]/2
-		$"../Camera2D".position[1] -= screen[1]/2
+		$"../Camera2D".position[0] -= screen[0]*5/2
+		$"../Camera2D".position[1] -= screen[1]*5/2
 		screen *= 2
 
 func fit_into_grid (vec):
