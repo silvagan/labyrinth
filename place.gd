@@ -6,6 +6,7 @@ extends Node
 @onready var room = preload("res://room.tscn")
 @onready var tunnel = preload("res://tunnel.tscn")
 @onready var chunk = preload("res://chunk.tscn")
+@onready var char = preload("res://char.tscn")
 
 
 @onready var pattern = $"../TileMap".tile_set.get_pattern(0)
@@ -39,6 +40,13 @@ func _ready():
 	$"../TileMap".set_pattern(0, Vector2i(0, 0), pattern)
 	$"../TileMap".set_pattern(0, Vector2i(10, 0), pattern)
 	$"../TileMap".set_pattern(0, Vector2i(0, 10), pattern)
+	
+	set_nav_poligon(Vector2(-500, -500), Vector2(-500, 15500), Vector2(15500, 15500), Vector2(15500, -500), $"../NavigationRegion2D")
+	
+	#for i in 1:
+		#var ch = char.instantiate()
+		#ch.position = Vector2(7500, 7500)
+		#add_child(ch)
 	
 
 func _process(delta):
@@ -292,6 +300,8 @@ func _input(event):
 					v1 = temp
 				save_tunnel_to_grid(chunks[key], v1, v2, "vertical", transfer)
 				#update_chunk(chunks[key])
+	
+		$"../NavigationRegion2D".bake_navigation_polygon()
 	
 	if event.is_action_pressed("zoom_in"):
 		$"../Camera2D".zoom *= 2
@@ -563,18 +573,6 @@ func generate_chunk(x, y):
 	initialize_table(c)
 	chunks[new_key] = c
 
-#func generate_chunks_around(x, y):
-	#var min = [x-1, y-1]
-	#var max = [x+1, y+1]
-	#for i in range(min[0], max[0]+1):
-		#for j in range(min[1], max[1]+1):
-			#var key = str(i)+" "+str(j)
-			#if(!chunks.has(key)):
-				#draw_grid(grid_width, grid_height, Vector2(i, j))
-				#debug_chunk_border(grid_width, grid_height, Vector2(i, j))
-				#generate_chunk(i, j)
-				#update_chunk(chunks[key])
-
 func debug_chunk_border(width, height, pos):
 	var dist = -global_scaling / 2
 	var tline = Line2D.new()
@@ -589,6 +587,18 @@ func debug_chunk_border(width, height, pos):
 	tline.add_point(Vector2(x, y))
 	tline.default_color = Color.RED
 	$Background.add_child(tline)
+
+func set_nav_poligon(c1,c2,c3,c4,region):
+	var new_navigation_mesh = NavigationPolygon.new()
+	var bounding_outline = PackedVector2Array([c1, c2, c3, c4])
+	new_navigation_mesh.add_outline(bounding_outline)
+	NavigationServer2D.bake_from_source_geometry_data(new_navigation_mesh, NavigationMeshSourceGeometryData2D.new());
+	new_navigation_mesh.source_geometry_mode = 1
+	new_navigation_mesh.source_geometry_group_name = "navigation"
+	new_navigation_mesh.agent_radius = 50
+	region.navigation_polygon = new_navigation_mesh
+	region.bake_navigation_polygon()
+
 
 func _on_timer_timeout():
 	pass

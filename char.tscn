@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://bf4rdhk6cp3rg"]
+
+[ext_resource type="Texture2D" uid="uid://bp2ft1703k6u1" path="res://temp.png" id="1_abvj4"]
+[ext_resource type="Script" path="res://char.gd" id="1_gfk3q"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_n0mq0"]
+radius = 50.01
+
+[node name="Char" type="CharacterBody2D"]
+top_level = true
+z_index = 4
+script = ExtResource("1_gfk3q")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_abvj4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_n0mq0")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+debug_enabled = true
