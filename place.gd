@@ -43,10 +43,10 @@ func _ready():
 	
 	set_nav_poligon(Vector2(-500, -500), Vector2(-500, 15500), Vector2(15500, 15500), Vector2(15500, -500), $"../NavigationRegion2D")
 	
-	#for i in 1:
-		#var ch = char.instantiate()
-		#ch.position = Vector2(7500, 7500)
-		#add_child(ch)
+	for i in 1:
+		var ch = char.instantiate()
+		ch.position = Vector2(7500, 7500)
+		add_child(ch)
 	
 
 func _process(delta):
