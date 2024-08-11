@@ -2,11 +2,11 @@ extends Node
 
 @onready var preview_line = Line2D.new()
 
-@onready var tile = preload("res://tile.tscn")
-@onready var room = preload("res://room.tscn")
-@onready var tunnel = preload("res://tunnel.tscn")
-@onready var chunk = preload("res://chunk.tscn")
-@onready var char = preload("res://char.tscn")
+@onready var tile = preload("res://environment/tile.tscn")
+@onready var room = preload("res://environment/room.tscn")
+@onready var tunnel = preload("res://environment/tunnel.tscn")
+@onready var chunk = preload("res://environment/chunk.tscn")
+@onready var char = preload("res://character/char.tscn")
 
 
 @onready var pattern = $"../TileMap".tile_set.get_pattern(0)
@@ -42,15 +42,11 @@ func _ready():
 	$"../TileMap".set_pattern(0, Vector2i(0, 10), pattern)
 	
 	set_nav_poligon(Vector2(-500, -500), Vector2(-500, 15500), Vector2(15500, 15500), Vector2(15500, -500), $"../NavigationRegion2D")
-	
-	for i in 1:
-		var ch = char.instantiate()
-		ch.position = Vector2(7500, 7500)
-		add_child(ch)
+
 	
 
 func _process(delta):
-	var mouse_pos = fit_into_grid((get_viewport().get_mouse_position() / Vector2($"../Camera2D".zoom[0], $"../Camera2D".zoom[1]))+$"../Camera2D".position)
+	var mouse_pos = fit_into_grid((get_viewport().get_mouse_position() / Vector2($"../MainCamera".zoom[0], $"../MainCamera".zoom[1]))+$"../MainCamera".position)
 	if is_tunnel:
 		if start:
 			preview_line = Line2D.new()
@@ -111,17 +107,17 @@ func _process(delta):
 var screen = Vector2i(1920, 1080)
 func _input(event):
 	if event.is_action_pressed("shift_left_click"):
-		line_start = fit_into_grid((get_viewport().get_mouse_position() / Vector2($"../Camera2D".zoom[0], $"../Camera2D".zoom[1]))+$"../Camera2D".position)
+		line_start = fit_into_grid((get_viewport().get_mouse_position() / Vector2($"../MainCamera".zoom[0], $"../MainCamera".zoom[1]))+$"../MainCamera".position)
 		is_room = true
 		start = true
 		update = true
 	elif event.is_action_pressed("left_click"):
-		line_start = fit_into_grid((get_viewport().get_mouse_position() / Vector2($"../Camera2D".zoom[0], $"../Camera2D".zoom[1]))+$"../Camera2D".position)
+		line_start = fit_into_grid((get_viewport().get_mouse_position() / Vector2($"../MainCamera".zoom[0], $"../MainCamera".zoom[1]))+$"../MainCamera".position)
 		is_tunnel = true
 		start = true
 		update = true
 	if event.is_action_pressed("right_click"):
-		line_start = fit_into_grid((get_viewport().get_mouse_position() / Vector2($"../Camera2D".zoom[0], $"../Camera2D".zoom[1]))+$"../Camera2D".position)
+		line_start = fit_into_grid((get_viewport().get_mouse_position() / Vector2($"../MainCamera".zoom[0], $"../MainCamera".zoom[1]))+$"../MainCamera".position)
 		delete = true
 		start = true
 		update = true
@@ -304,14 +300,14 @@ func _input(event):
 		$"../NavigationRegion2D".bake_navigation_polygon()
 	
 	if event.is_action_pressed("zoom_in"):
-		$"../Camera2D".zoom *= 2
-		$"../Camera2D".position[0] += screen[0]*5/4
-		$"../Camera2D".position[1] += screen[1]*5/4
+		$"../MainCamera".zoom *= 2
+		$"../MainCamera".position[0] += screen[0]*5/4
+		$"../MainCamera".position[1] += screen[1]*5/4
 		screen /= 2
 	if event.is_action_pressed("zoom_out"):
-		$"../Camera2D".zoom /= 2
-		$"../Camera2D".position[0] -= screen[0]*5/2
-		$"../Camera2D".position[1] -= screen[1]*5/2
+		$"../MainCamera".zoom /= 2
+		$"../MainCamera".position[0] -= screen[0]*5/2
+		$"../MainCamera".position[1] -= screen[1]*5/2
 		screen *= 2
 
 func fit_into_grid (vec):
@@ -595,10 +591,21 @@ func set_nav_poligon(c1,c2,c3,c4,region):
 	NavigationServer2D.bake_from_source_geometry_data(new_navigation_mesh, NavigationMeshSourceGeometryData2D.new());
 	new_navigation_mesh.source_geometry_mode = 1
 	new_navigation_mesh.source_geometry_group_name = "navigation"
-	new_navigation_mesh.agent_radius = 50
+	new_navigation_mesh.agent_radius = 55
 	region.navigation_polygon = new_navigation_mesh
 	region.bake_navigation_polygon()
 
 
 func _on_timer_timeout():
-	pass
+	var ch = char.instantiate()
+	ch.position = Vector2(7500, 7500)
+	add_child(ch)
+	ch = char.instantiate()
+	ch.position = Vector2(7500, 7000)
+	add_child(ch)
+	ch = char.instantiate()
+	ch.position = Vector2(7000, 7000)
+	add_child(ch)
+	ch = char.instantiate()
+	ch.position = Vector2(7000, 7500)
+	add_child(ch)

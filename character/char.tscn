@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3 uid="uid://bf4rdhk6cp3rg"]
+
+[ext_resource type="Script" path="res://character/main.gd" id="1_0uck5"]
+[ext_resource type="Texture2D" uid="uid://bp2ft1703k6u1" path="res://res/temp.png" id="2_tlkho"]
+[ext_resource type="Script" path="res://character/head.gd" id="3_cvtxe"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_n0mq0"]
+radius = 50.01
+
+[node name="Char" type="CharacterBody2D"]
+top_level = true
+z_index = 4
+script = ExtResource("1_0uck5")
+movement_speed = 200.0
+
+[node name="BodySprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_tlkho")
+
+[node name="BodyCollider" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_n0mq0")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+debug_enabled = true
+
+[node name="Head" type="Node2D" parent="."]
+script = ExtResource("3_cvtxe")
+fov = 90.0
+rayCount = 20.0
+
+[node name="Sprite2D" type="Sprite2D" parent="Head"]
+scale = Vector2(0.87, 0.87)
+texture = ExtResource("2_tlkho")
+
+[node name="ViewCone" type="StaticBody2D" parent="Head"]
+
+[node name="Mesh" type="MeshInstance2D" parent="Head/ViewCone"]
+
+[node name="Area2D" type="Area2D" parent="Head/ViewCone"]
+collision_layer = 2
+collision_mask = 4
+
+[node name="Collider" type="CollisionPolygon2D" parent="Head/ViewCone/Area2D"]

@@ -1,8 +1,8 @@
 [gd_scene load_steps=43 format=3 uid="uid://dv2stuosd2v67"]
 
-[ext_resource type="Script" path="res://place.gd" id="1_uolgy"]
-[ext_resource type="Script" path="res://camera2D.gd" id="2_k4a2t"]
-[ext_resource type="Texture2D" uid="uid://xq32qmq26vgk" path="res://tilemap.png" id="4_srjaq"]
+[ext_resource type="Texture2D" uid="uid://xq32qmq26vgk" path="res://environment/tilemap.png" id="1_jtgkx"]
+[ext_resource type="Script" path="res://environment/scene.gd" id="2_bya13"]
+[ext_resource type="Script" path="res://environment/main_camera.gd" id="3_cf2vj"]
 
 [sub_resource type="TileMapPattern" id="TileMapPattern_bm7dk"]
 tile_data = PackedInt32Array(0, 65539, 0, 65536, 65539, 0, 131072, 65539, 0, 196608, 65539, 0, 262144, 65539, 0, 327680, 65539, 0, 393216, 65539, 0, 458752, 65539, 0, 524288, 65539, 0, 589824, 65539, 0, 1, 65539, 0, 65537, 65539, 0, 131073, 65539, 0, 196609, 65539, 0, 262145, 65539, 0, 327681, 65539, 0, 393217, 65539, 0, 458753, 65539, 0, 524289, 65539, 0, 589825, 65539, 0, 2, 65539, 0, 65538, 65539, 0, 131074, 65539, 0, 196610, 65539, 0, 262146, 65539, 0, 327682, 65539, 0, 393218, 65539, 0, 458754, 65539, 0, 524290, 65539, 0, 589826, 65539, 0, 3, 65539, 0, 65539, 65539, 0, 131075, 65539, 0, 196611, 65539, 0, 262147, 65539, 0, 327683, 65539, 0, 393219, 65539, 0, 458755, 65539, 0, 524291, 65539, 0, 589827, 65539, 0, 4, 65539, 0, 65540, 65539, 0, 131076, 65539, 0, 196612, 65539, 0, 262148, 65539, 0, 327684, 65539, 0, 393220, 65539, 0, 458756, 65539, 0, 524292, 65539, 0, 589828, 65539, 0, 5, 65539, 0, 65541, 65539, 0, 131077, 65539, 0, 196613, 65539, 0, 262149, 65539, 0, 327685, 65539, 0, 393221, 65539, 0, 458757, 65539, 0, 524293, 65539, 0, 589829, 65539, 0, 6, 65539, 0, 65542, 65539, 0, 131078, 65539, 0, 196614, 65539, 0, 262150, 65539, 0, 327686, 65539, 0, 393222, 65539, 0, 458758, 65539, 0, 524294, 65539, 0, 589830, 65539, 0, 7, 65539, 0, 65543, 65539, 0, 131079, 65539, 0, 196615, 65539, 0, 262151, 65539, 0, 327687, 65539, 0, 393223, 65539, 0, 458759, 65539, 0, 524295, 65539, 0, 589831, 65539, 0, 8, 65539, 0, 65544, 65539, 0, 131080, 65539, 0, 196616, 65539, 0, 262152, 65539, 0, 327688, 65539, 0, 393224, 65539, 0, 458760, 65539, 0, 524296, 65539, 0, 589832, 65539, 0, 9, 65539, 0, 65545, 65539, 0, 131081, 65539, 0, 196617, 65539, 0, 262153, 65539, 0, 327689, 65539, 0, 393225, 65539, 0, 458761, 65539, 0, 524297, 65539, 0, 589833, 65539, 0)
@@ -116,11 +116,13 @@ tile_data = PackedInt32Array(0, 65539, 0, 65536, 65539, 0, 131072, 65539, 0, 196
 tile_data = PackedInt32Array(0, 65539, 0, 65536, 65539, 0, 131072, 196611, 0, 196608, 196611, 1, 262144, 196611, 1, 327680, 196611, 1, 393216, 196611, 1, 458752, 196611, 2, 524288, 65539, 0, 589824, 65539, 0, 1, 65539, 0, 65537, 65539, 0, 131073, 196611, 0, 196609, 196611, 1, 262145, 196611, 1, 327681, 196611, 1, 393217, 196611, 1, 458753, 196611, 2, 524289, 65539, 0, 589825, 65539, 0, 2, 65539, 0, 65538, 65539, 0, 131074, 196611, 0, 196610, 196611, 1, 262146, 196611, 1, 327682, 196611, 1, 393218, 196611, 1, 458754, 196611, 2, 524290, 65539, 0, 589826, 65539, 0, 3, 65539, 0, 65539, 65539, 0, 131075, 196611, 0, 196611, 196611, 1, 262147, 196611, 1, 327683, 196611, 1, 393219, 196611, 1, 458755, 196611, 2, 524291, 65539, 0, 589827, 65539, 0, 4, 65539, 0, 65540, 65539, 0, 131076, 196611, 0, 196612, 196611, 1, 262148, 196611, 1, 327684, 196611, 1, 393220, 196611, 1, 458756, 196611, 2, 524292, 65539, 0, 589828, 65539, 0, 5, 65539, 0, 65541, 65539, 0, 131077, 196611, 0, 196613, 196611, 1, 262149, 196611, 1, 327685, 196611, 1, 393221, 196611, 1, 458757, 196611, 2, 524293, 65539, 0, 589829, 65539, 0, 6, 65539, 0, 65542, 65539, 0, 131078, 196611, 0, 196614, 196611, 1, 262150, 196611, 1, 327686, 196611, 1, 393222, 196611, 1, 458758, 196611, 2, 524294, 65539, 0, 589830, 65539, 0, 7, 65539, 0, 65543, 65539, 0, 131079, 262147, 0, 196615, 262147, 1, 262151, 262147, 1, 327687, 262147, 1, 393223, 262147, 1, 458759, 262147, 2, 524295, 65539, 0, 589831, 65539, 0, 8, 65539, 0, 65544, 65539, 0, 131080, 65539, 0, 196616, 65539, 0, 262152, 65539, 0, 327688, 65539, 0, 393224, 65539, 0, 458760, 65539, 0, 524296, 65539, 0, 589832, 65539, 0, 9, 65539, 0, 65545, 65539, 0, 131081, 65539, 0, 196617, 65539, 0, 262153, 65539, 0, 327689, 65539, 0, 393225, 65539, 0, 458761, 65539, 0, 524297, 65539, 0, 589833, 65539, 0)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ywgbe"]
-texture = ExtResource("4_srjaq")
+texture = ExtResource("1_jtgkx")
 texture_region_size = Vector2i(100, 100)
 1:0/0 = 0
 1:0/0/terrain_set = 0
 1:0/0/terrain = 0
+1:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+1:0/0/physics_layer_0/angular_velocity = 0.0
 1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(50, 50, -50, 50, -50, -50, 50, -50)
 1:0/0/terrains_peering_bit/right_side = 0
 1:0/0/terrains_peering_bit/bottom_right_corner = 0
@@ -132,6 +134,8 @@ texture_region_size = Vector2i(100, 100)
 1:0/0/terrains_peering_bit/top_right_corner = 0
 2:0/0 = 0
 2:0/0/terrain_set = 0
+2:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+2:0/0/physics_layer_0/angular_velocity = 0.0
 2:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-50, -50, -50, 50, 0, 50, 0, 0)
 2:0/0/physics_layer_0/polygon_1/points = PackedVector2Array(-50, -50, 0, 0, 50, 0, 50, -50)
 2:0/0/terrains_peering_bit/bottom_left_corner = 0
@@ -141,12 +145,16 @@ texture_region_size = Vector2i(100, 100)
 2:0/0/terrains_peering_bit/top_right_corner = 0
 3:0/0 = 0
 3:0/0/terrain_set = 0
+3:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+3:0/0/physics_layer_0/angular_velocity = 0.0
 3:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-50, 0, 50, 0, 50, -50, -50, -50)
 3:0/0/terrains_peering_bit/top_left_corner = 0
 3:0/0/terrains_peering_bit/top_side = 0
 3:0/0/terrains_peering_bit/top_right_corner = 0
 4:0/0 = 0
 4:0/0/terrain_set = 0
+4:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+4:0/0/physics_layer_0/angular_velocity = 0.0
 4:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(50, -50, -50, -50, -50, 0, 0, 0)
 4:0/0/physics_layer_0/polygon_1/points = PackedVector2Array(50, -50, 0, 0, 0, 50, 50, 50)
 4:0/0/terrains_peering_bit/right_side = 0
@@ -156,35 +164,51 @@ texture_region_size = Vector2i(100, 100)
 4:0/0/terrains_peering_bit/top_right_corner = 0
 0:1/0 = 0
 0:1/0/terrain_set = 0
+0:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+0:1/0/physics_layer_0/angular_velocity = 0.0
 0:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(50, 0, 50, 50, 0, 50, 0, 0)
 0:1/0/terrains_peering_bit/bottom_right_corner = 0
 1:1/0 = 0
 1:1/0/terrain_set = 0
+1:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+1:1/0/physics_layer_0/angular_velocity = 0.0
 1:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(0, 0, 0, 50, -50, 50, -50, 0)
 1:1/0/terrains_peering_bit/bottom_left_corner = 0
 2:1/0 = 0
 2:1/0/terrain_set = 0
+2:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+2:1/0/physics_layer_0/angular_velocity = 0.0
 2:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-50, -50, 0, -50, 0, 50, -50, 50)
 2:1/0/terrains_peering_bit/bottom_left_corner = 0
 2:1/0/terrains_peering_bit/left_side = 0
 2:1/0/terrains_peering_bit/top_left_corner = 0
 3:1/0 = 0
+3:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+3:1/0/physics_layer_0/angular_velocity = 0.0
 4:1/0 = 0
 4:1/0/terrain_set = 0
+4:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+4:1/0/physics_layer_0/angular_velocity = 0.0
 4:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(50, -50, 50, 50, 0, 50, 0, -50)
 4:1/0/terrains_peering_bit/right_side = 0
 4:1/0/terrains_peering_bit/bottom_right_corner = 0
 4:1/0/terrains_peering_bit/top_right_corner = 0
 0:2/0 = 0
 0:2/0/terrain_set = 0
+0:2/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+0:2/0/physics_layer_0/angular_velocity = 0.0
 0:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(50, -50, 50, 0, 0, 0, 0, -50)
 0:2/0/terrains_peering_bit/top_right_corner = 0
 1:2/0 = 0
 1:2/0/terrain_set = 0
+1:2/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+1:2/0/physics_layer_0/angular_velocity = 0.0
 1:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(0, -50, 0, 0, -50, 0, -50, -50)
 1:2/0/terrains_peering_bit/top_left_corner = 0
 2:2/0 = 0
 2:2/0/terrain_set = 0
+2:2/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+2:2/0/physics_layer_0/angular_velocity = 0.0
 2:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-50, 50, 50, 50, 50, 0, 0, 0)
 2:2/0/physics_layer_0/polygon_1/points = PackedVector2Array(-50, 50, 0, 0, 0, -50, -50, -50)
 2:2/0/terrains_peering_bit/bottom_right_corner = 0
@@ -194,6 +218,8 @@ texture_region_size = Vector2i(100, 100)
 2:2/0/terrains_peering_bit/top_left_corner = 0
 3:2/0 = 0
 3:2/0/terrain_set = 0
+3:2/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+3:2/0/physics_layer_0/angular_velocity = 0.0
 3:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(50, 0, 50, 50, -50, 50, -50, 0)
 3:2/0/physics_layer_0/polygon_0/one_way_margin = 0.0
 3:2/0/terrains_peering_bit/bottom_right_corner = 0
@@ -201,6 +227,8 @@ texture_region_size = Vector2i(100, 100)
 3:2/0/terrains_peering_bit/bottom_left_corner = 0
 4:2/0 = 0
 4:2/0/terrain_set = 0
+4:2/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+4:2/0/physics_layer_0/angular_velocity = 0.0
 4:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(50, 50, 50, -50, 0, -50, 0, 0)
 4:2/0/physics_layer_0/polygon_1/points = PackedVector2Array(50, 50, 0, 0, -50, 0, -50, 50)
 4:2/0/terrains_peering_bit/right_side = 0
@@ -266,7 +294,7 @@ format = 2
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
 
 [node name="Visuals" type="Node" parent="."]
-script = ExtResource("1_uolgy")
+script = ExtResource("2_bya13")
 
 [node name="Top" type="CanvasLayer" parent="Visuals"]
 layer = 2
@@ -280,11 +308,11 @@ follow_viewport_enabled = true
 wait_time = 5.0
 autostart = true
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="MainCamera" type="Camera2D" parent="."]
 position = Vector2(2700, 4800)
 scale = Vector2(2.44, 11.44)
 anchor_mode = 0
 zoom = Vector2(0.2, 0.2)
-script = ExtResource("2_k4a2t")
+script = ExtResource("3_cf2vj")
 
 [connection signal="timeout" from="Timer" to="Visuals" method="_on_timer_timeout"]

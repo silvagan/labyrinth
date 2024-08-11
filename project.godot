@@ -11,13 +11,15 @@ config_version=5
 [application]
 
 config/name="Labyrinth"
-run/main_scene="res://labyrinth.tscn"
+run/main_scene="res://environment/labyrinth.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
 
 [debug]
 
 gdscript/warnings/integer_division=0
+shapes/navigation/geometry_edge_color=Color(0.501961, 0, 1, 1)
+shapes/navigation/link_connection_color=Color(0.993151, 0.172627, 0.676689, 1)
 
 [dotnet]
 

@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-@export var movement_speed: float = 200.0
+@export var movement_speed: float = 100.0
 @onready var navigation_agent: NavigationAgent2D = get_node("NavigationAgent2D")
 
 func _ready() -> void:
@@ -10,14 +10,15 @@ func _ready() -> void:
 func set_movement_target(movement_target: Vector2):
 	navigation_agent.set_target_position(movement_target)
 
+
 func _physics_process(delta):
-	if (!navigation_agent.is_target_reachable()):
-		set_movement_target(random_walk())
 	if navigation_agent.is_navigation_finished():
+		set_movement_target(random_walk())
+	while !navigation_agent.is_target_reachable():
 		set_movement_target(random_walk())
 
 	var next_path_position: Vector2 = navigation_agent.get_next_path_position()
-	var new_velocity: Vector2 = global_position.direction_to(next_path_position) * movement_speed
+	var new_velocity: Vector2 = global_position.direction_to(next_path_position) * movement_speed * randf_range(0.5, 1.2) * delta *50
 	if navigation_agent.avoidance_enabled:
 		navigation_agent.set_velocity(new_velocity)
 	else:
@@ -26,6 +27,8 @@ func _physics_process(delta):
 
 func _on_navigation_agent_2d_velocity_computed(safe_velocity: Vector2) -> void:
 	velocity = safe_velocity
+	$BodySprite.look_at(transform.origin + velocity)
+	$BodySprite.rotation = fmod($BodySprite.rotation, 6.28319)
 	move_and_slide()
 
 

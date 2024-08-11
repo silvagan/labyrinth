@@ -1,0 +1,34 @@
+[gd_scene load_steps=6 format=3 uid="uid://bf4rdhk6cp3rg"]
+
+[ext_resource type="Script" path="res://character/main.gd" id="1_0uck5"]
+[ext_resource type="Texture2D" uid="uid://bp2ft1703k6u1" path="res://res/temp.png" id="2_tlkho"]
+[ext_resource type="Script" path="res://character/head.gd" id="3_cvtxe"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_n0mq0"]
+radius = 50.01
+
+[sub_resource type="BoxMesh" id="BoxMesh_bxo1k"]
+
+[node name="Char" type="CharacterBody2D"]
+top_level = true
+z_index = 4
+script = ExtResource("1_0uck5")
+
+[node name="BodySprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_tlkho")
+
+[node name="BodyCollider" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_n0mq0")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+debug_enabled = true
+
+[node name="Head" type="Node2D" parent="."]
+script = ExtResource("3_cvtxe")
+
+[node name="ViewCone" type="MeshInstance2D" parent="Head"]
+mesh = SubResource("BoxMesh_bxo1k")
+
+[node name="Sprite2D" type="Sprite2D" parent="Head"]
+scale = Vector2(0.87, 0.87)
+texture = ExtResource("2_tlkho")
